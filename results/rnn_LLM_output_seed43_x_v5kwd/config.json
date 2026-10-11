@@ -1,0 +1,23 @@
+{
+  "model": "LSTMClassifier (1-layer, unidirectional)",
+  "text_column": "LLM_output",
+  "seed": 43,
+  "device": "mps",
+  "batch_size": 32,
+  "max_len": 384,
+  "max_vocab_size": 5000,
+  "vocab_size": 5000,
+  "embed_dim": 128,
+  "hidden_dim": 64,
+  "dropout": 0.5,
+  "embed_dropout": 0.0,
+  "lr": 0.001,
+  "optimizer": "AdamW",
+  "weight_decay": 0.1,
+  "epochs": 15,
+  "clip_norm": 1.0,
+  "num_params": 689859,
+  "n_train": 1470,
+  "n_val": 315,
+  "n_test": 315
+}
