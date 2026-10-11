@@ -21,8 +21,8 @@ class Vocabulary:
     def __init__(self, max_size=20000, min_freq=2):
         self.max_size = max_size
         self.min_freq = min_freq
-        self.pad_token = ""
-        self.unk_token = ""
+        self.pad_token = "<pad>"
+        self.unk_token = "<unk>"
         self.pad_idx = 0
         self.unk_idx = 1
 
