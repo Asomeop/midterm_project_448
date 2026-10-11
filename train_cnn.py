@@ -79,7 +79,7 @@ def main():
     )
 
     model = TextCNN(
-        vocab_size=len(vocab),
+        vocab_size=len(vocab) + 1,
         embed_dim=EMBED_DIM,
         num_classes=len(LABEL_MAP),
         filter_sizes=FILTER_SIZES,
