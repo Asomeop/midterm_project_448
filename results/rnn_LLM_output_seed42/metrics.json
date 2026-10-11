@@ -1,0 +1,60 @@
+{
+  "best_val_loss": 0.47056907112636265,
+  "test_loss": 0.45485094274793353,
+  "test_acc": 85.39682539682539,
+  "labels": [
+    "Claude",
+    "Gemini",
+    "ChatGPT"
+  ],
+  "classification_report": {
+    "Claude": {
+      "precision": 0.8775510204081632,
+      "recall": 0.819047619047619,
+      "f1-score": 0.8472906403940886,
+      "support": 105.0
+    },
+    "Gemini": {
+      "precision": 0.8317757009345794,
+      "recall": 0.8476190476190476,
+      "f1-score": 0.839622641509434,
+      "support": 105.0
+    },
+    "ChatGPT": {
+      "precision": 0.8545454545454545,
+      "recall": 0.8952380952380953,
+      "f1-score": 0.8744186046511628,
+      "support": 105.0
+    },
+    "accuracy": 0.8539682539682539,
+    "macro avg": {
+      "precision": 0.854624058629399,
+      "recall": 0.8539682539682539,
+      "f1-score": 0.8537772955182286,
+      "support": 315.0
+    },
+    "weighted avg": {
+      "precision": 0.8546240586293989,
+      "recall": 0.8539682539682539,
+      "f1-score": 0.8537772955182285,
+      "support": 315.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      86,
+      11,
+      8
+    ],
+    [
+      8,
+      89,
+      8
+    ],
+    [
+      4,
+      7,
+      94
+    ]
+  ]
+}

@@ -1,0 +1,12 @@
+# Python environment and caches
+venv/
+__pycache__/
+
+# macOS
+.DS_Store
+
+# Model checkpoints (large; regenerate with the training scripts)
+*.pt
+
+# Course document (kept local)
+Midterm project-1-1 (1).pdf
