@@ -1,0 +1,84 @@
+{
+  "pool": "rq3/data/pool_full.csv",
+  "train_domain": "code",
+  "test_domains": [
+    "creative",
+    "math"
+  ],
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "device": "mps",
+  "chance_accuracy": 33.333333333333336,
+  "cnn": {
+    "BATCH_SIZE": 32,
+    "MAX_LEN": 384,
+    "VOCAB_SIZE": 20000,
+    "EMBED_DIM": 128,
+    "DROPOUT": 0.5,
+    "LR": 0.001,
+    "EPOCHS": 15,
+    "NUM_FILTERS": 100,
+    "FILTER_SIZES": [
+      3,
+      4,
+      5
+    ],
+    "vocab_size_actual": 17248
+  },
+  "rnn": {
+    "BATCH_SIZE": 32,
+    "MAX_LEN": 384,
+    "VOCAB_SIZE": 250,
+    "EMBED_DIM": 128,
+    "DROPOUT": 0.5,
+    "LR": 0.001,
+    "EPOCHS": 15,
+    "HIDDEN_DIM": 64,
+    "CLIP_NORM": 1.0,
+    "vocab_size_actual": 250
+  },
+  "split_sizes_by_seed": {
+    "42": {
+      "train": 942,
+      "val": 201,
+      "test_code": 201,
+      "test_creative_all": 573,
+      "test_creative_matched": 201,
+      "test_math_all": 480,
+      "test_math_matched": 201,
+      "leaked_prompts_dropped": {
+        "creative": 0,
+        "math": 0
+      }
+    },
+    "43": {
+      "train": 942,
+      "val": 201,
+      "test_code": 201,
+      "test_creative_all": 573,
+      "test_creative_matched": 201,
+      "test_math_all": 480,
+      "test_math_matched": 201,
+      "leaked_prompts_dropped": {
+        "creative": 0,
+        "math": 0
+      }
+    },
+    "44": {
+      "train": 942,
+      "val": 201,
+      "test_code": 201,
+      "test_creative_all": 573,
+      "test_creative_matched": 201,
+      "test_math_all": 480,
+      "test_math_matched": 201,
+      "leaked_prompts_dropped": {
+        "creative": 0,
+        "math": 0
+      }
+    }
+  }
+}
