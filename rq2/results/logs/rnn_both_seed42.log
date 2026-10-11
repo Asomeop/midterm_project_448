@@ -1,0 +1,31 @@
+Device: mps | Model: rnn | Setting: both | Output: /Users/kasraghadimi/Desktop/Penn State/Projects/CMPSC448 - Midterm/midterm_project_448/rq2/results/rnn_both_seed42
+Epoch 01/15 | Train Loss: 1.0432 Acc: 43.74% | Val Loss: 0.9782 Acc: 53.97% [*]
+Epoch 02/15 | Train Loss: 0.9814 Acc: 51.84% | Val Loss: 0.9156 Acc: 57.78% [*]
+Epoch 03/15 | Train Loss: 0.8820 Acc: 60.88% | Val Loss: 0.8317 Acc: 62.22% [*]
+Epoch 04/15 | Train Loss: 0.7793 Acc: 68.84% | Val Loss: 0.6979 Acc: 73.33% [*]
+Epoch 05/15 | Train Loss: 0.7344 Acc: 70.20% | Val Loss: 0.7584 Acc: 68.89%
+Epoch 06/15 | Train Loss: 0.6461 Acc: 75.17% | Val Loss: 0.6796 Acc: 73.97% [*]
+Epoch 07/15 | Train Loss: 0.5921 Acc: 78.10% | Val Loss: 0.5696 Acc: 77.78% [*]
+Epoch 08/15 | Train Loss: 0.5245 Acc: 81.16% | Val Loss: 0.5560 Acc: 79.68% [*]
+Epoch 09/15 | Train Loss: 0.4766 Acc: 82.65% | Val Loss: 0.6030 Acc: 78.10%
+Epoch 10/15 | Train Loss: 0.5045 Acc: 82.24% | Val Loss: 0.5237 Acc: 81.27% [*]
+Epoch 11/15 | Train Loss: 0.4088 Acc: 87.01% | Val Loss: 0.5394 Acc: 78.10%
+Epoch 12/15 | Train Loss: 0.3721 Acc: 87.69% | Val Loss: 0.5592 Acc: 80.63%
+Epoch 13/15 | Train Loss: 0.3353 Acc: 89.46% | Val Loss: 0.5291 Acc: 80.95%
+Epoch 14/15 | Train Loss: 0.3325 Acc: 89.32% | Val Loss: 0.4598 Acc: 80.63% [*]
+Epoch 15/15 | Train Loss: 0.2755 Acc: 91.50% | Val Loss: 0.6057 Acc: 80.00%
+Test Loss: 0.4482 | Test Acc: 84.76%
+
+              precision    recall  f1-score   support
+
+      Claude     0.8257    0.8571    0.8411       105
+      Gemini     0.8713    0.8381    0.8544       105
+     ChatGPT     0.8476    0.8476    0.8476       105
+
+    accuracy                         0.8476       315
+   macro avg     0.8482    0.8476    0.8477       315
+weighted avg     0.8482    0.8476    0.8477       315
+
+[[90  6  9]
+ [10 88  7]
+ [ 9  7 89]]

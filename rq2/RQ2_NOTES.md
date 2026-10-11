@@ -102,7 +102,7 @@ So if a teammate changes a model or its hyperparameters, RQ2 picks it up automat
   example (seed 42: 93.65% vs 93.97%). The Apple GPU backend is not fully deterministic;
   this is far smaller than the seed-to-seed spread and changes no conclusion.
 
-## Results (2026-10-11, partial: RNN output seeds 43-44 and RNN input + output still running)
+## Results (2026-10-11, all 18 runs complete)
 
 Test accuracy, mean ± std over seeds 42/43/44 (`python rq2/summarize_rq2.py`). Chance = 33.3%.
 
@@ -112,8 +112,8 @@ Test accuracy, mean ± std over seeds 42/43/44 (`python rq2/summarize_rq2.py`). 
 | CNN | Output only | 94.3 ± 0.3 | 94.6 / 94.0 / 94.3 | 0.943 |
 | CNN | Input + Output | 94.9 ± 1.1 | 94.0 / 96.2 / 94.6 | 0.949 |
 | RNN | Input only | 35.1 ± 1.3 | 33.7 / 35.6 / 36.2 | 0.302 |
-| RNN | Output only | _pending_ | 85.4 / … / … | |
-| RNN | Input + Output | _pending_ | | |
+| RNN | Output only | 85.8 ± 0.7 | 85.4 / 86.7 / 85.4 | 0.858 |
+| RNN | Input + Output | 83.1 ± 1.6 | 84.8 / 82.9 / 81.6 | 0.831 |
 
 Input-only confusion matrices, summed over the 3 seeds (rows = true Claude/Gemini/ChatGPT,
 cols = predicted). Predictions are spread across all three classes, so the model is not
@@ -138,9 +138,13 @@ will answer.
 **(ii) Does including the input improve classification? No meaningful improvement.**
 CNN: 94.9 ± 1.1% with input + output vs 94.3 ± 0.3% with output only (+0.6 points, about
 2 test examples), smaller than the seed-to-seed spread (seed 42 is actually lower with the
-input: 94.0 vs 94.6). _RNN: pending._ Since the prompt alone carries no signal, adding it
-can at best give context for reading the response; in practice the identifying signal is
-in the response. Adding the prompt also pushes more of the response past the 384-token
+input: 94.0 vs 94.6). RNN: 83.1 ± 1.6% with input + output vs 85.8 ± 0.7% with output
+only (-2.7 points), lower for every seed (84.8 vs 85.4, 82.9 vs 86.7, 81.6 vs 85.4), so for
+the RNN adding the prompt slightly hurts. Since the prompt alone carries no signal, adding
+it can at best give context for reading the response; in practice the identifying signal is
+in the response. Possible reasons the RNN is hurt (not tested): its 250-token vocabulary is
+now shared with prompt words, and the LSTM classifies from its state after the last token,
+so losing more response endings to truncation may matter more for it than for the CNN. Adding the prompt also pushes more of the response past the 384-token
 window (63.3% vs 57.9% of examples truncated), which could offset any small gain.
 
 **(iii) Why might input-only work surprisingly well? It doesn't here, and the reason is
