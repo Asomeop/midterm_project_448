@@ -17,11 +17,13 @@ class LSTMClassifier(nn.Module):
     """Single-layer LSTM: tokens -> embeddings -> LSTM -> final hidden state -> logits."""
 
     def __init__(self, vocab_size, num_classes, embed_dim=128, hidden_dim=128,
-                 dropout=0.5, pad_idx=0):
+                 dropout=0.5, embed_dropout=0.0, pad_idx=0):
         super().__init__()
         self.pad_idx = pad_idx
         # Map each token ID to a learned vector; padding stays a zero vector
         self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=pad_idx)
+        # Randomly zeroes parts of word vectors in training so no single word can be relied on
+        self.embed_dropout = nn.Dropout(embed_dropout)
         # Read the sequence left to right, one token at a time
         self.lstm = nn.LSTM(embed_dim, hidden_dim, batch_first=True)
         # Regularize, then map the final hidden state to one score per LLM
@@ -31,7 +33,7 @@ class LSTMClassifier(nn.Module):
     def forward(self, tokens):
         # dataset.py pads only at the end, so real length = number of non-pad tokens
         lengths = (tokens != self.pad_idx).sum(dim=1).cpu()
-        x = self.embedding(tokens)
+        x = self.embed_dropout(self.embedding(tokens))
         # Pack so the LSTM stops at each sequence's real end instead of running over padding
         packed = pack_padded_sequence(x, lengths, batch_first=True, enforce_sorted=False)
         _, (h_n, _) = self.lstm(packed)

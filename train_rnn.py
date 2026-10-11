@@ -4,8 +4,9 @@ Usage:
     python train_rnn.py                            # RQ1 / RQ2 output-only
     python train_rnn.py --text_column LLM_Input    # RQ2 input-only
     python train_rnn.py --seed 1 --device cpu
+    python train_rnn.py --vocab_size 5000 --tag v5k   # anti-overfitting experiments
 
-Saves to results/rnn_<text_column>_seed<seed>/:
+Saves to results/rnn_<text_column>_seed<seed>[_<tag>]/:
     config.json   hyperparameters, device, vocab size, dataset sizes
     history.json  per-epoch train/val loss and accuracy
     metrics.json  test loss, accuracy, per-class report, confusion matrix
@@ -28,13 +29,16 @@ from model_rnn import LSTMClassifier
 # Shared settings match train_cnn.py so CNN vs RNN differences come from the model, not the setup
 BATCH_SIZE = 32
 MAX_LEN = 384        # tokens kept per text; longer texts are truncated (bugs.md 2.1)
-VOCAB_SIZE = 20000
+VOCAB_SIZE = 250     # DEVIATION from CNN (20000): chosen by val-loss sweep to curb overfitting (NOTES.md)
 EMBED_DIM = 128
 HIDDEN_DIM = 64      # size of the LSTM memory vector; was 128, reduced for overfitting (NOTES.md)
 DROPOUT = 0.5
 LR = 1e-3
 EPOCHS = 15
 CLIP_NORM = 1.0      # RNN-only: gradients through 384 time steps can explode; cap their norm
+# Anti-overfitting knobs (overridable by flags); 0.0 = off, which matches the CNN setup
+EMBED_DROPOUT = 0.0
+WEIGHT_DECAY = 0.0
 
 
 def set_seed(seed):
@@ -114,12 +118,18 @@ def main():
                         choices=["LLM_output", "LLM_Input"])
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", default="auto")
+    parser.add_argument("--vocab_size", type=int, default=VOCAB_SIZE)
+    parser.add_argument("--embed_dim", type=int, default=EMBED_DIM)
+    parser.add_argument("--embed_dropout", type=float, default=EMBED_DROPOUT)
+    parser.add_argument("--weight_decay", type=float, default=WEIGHT_DECAY)
+    parser.add_argument("--tag", default="", help="suffix for the results folder")
     args = parser.parse_args()
 
     set_seed(args.seed)
     device = pick_device(args.device)
-    # One folder per setting + seed so runs never overwrite each other
-    out_dir = os.path.join("results", f"rnn_{args.text_column}_seed{args.seed}")
+    # One folder per setting + seed (+ tag) so runs never overwrite each other
+    run_name = f"rnn_{args.text_column}_seed{args.seed}" + (f"_{args.tag}" if args.tag else "")
+    out_dir = os.path.join("results", run_name)
     os.makedirs(out_dir, exist_ok=True)
     ckpt_path = os.path.join(out_dir, "best.pt")
     print(f"Device: {device} | Text column: {args.text_column} | Output: {out_dir}")
@@ -129,7 +139,7 @@ def main():
         text_column=args.text_column,
         max_len=MAX_LEN,
         batch_size=BATCH_SIZE,
-        max_vocab_size=VOCAB_SIZE,
+        max_vocab_size=args.vocab_size,
     )
 
     # NOTE: this assumes the pad/unk token bug in dataset.py is fixed (bugs.md 1.1).
@@ -139,15 +149,17 @@ def main():
     model = LSTMClassifier(
         vocab_size=len(vocab),
         num_classes=len(LABEL_MAP),
-        embed_dim=EMBED_DIM,
+        embed_dim=args.embed_dim,
         hidden_dim=HIDDEN_DIM,
         dropout=DROPOUT,
+        embed_dropout=args.embed_dropout,
         pad_idx=vocab.pad_idx,
     ).to(device)
 
     # Cross-entropy applies softmax internally, so the model outputs raw logits
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
+    # AdamW with weight_decay=0 is identical to the CNN's Adam; >0 shrinks weights each step
+    optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=args.weight_decay)
 
     # Saved before training so the setup is recorded even if a run crashes
     save_json({
@@ -157,13 +169,15 @@ def main():
         "device": str(device),
         "batch_size": BATCH_SIZE,
         "max_len": MAX_LEN,
-        "max_vocab_size": VOCAB_SIZE,
+        "max_vocab_size": args.vocab_size,
         "vocab_size": len(vocab),
-        "embed_dim": EMBED_DIM,
+        "embed_dim": args.embed_dim,
         "hidden_dim": HIDDEN_DIM,
         "dropout": DROPOUT,
+        "embed_dropout": args.embed_dropout,
         "lr": LR,
-        "optimizer": "Adam",
+        "optimizer": "AdamW",
+        "weight_decay": args.weight_decay,
         "epochs": EPOCHS,
         "clip_norm": CLIP_NORM,
         "num_params": sum(p.numel() for p in model.parameters()),

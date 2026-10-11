@@ -29,6 +29,10 @@ Observed behavior (verified 2026-10-09, torch 2.8.0):
   once in the first 384 tokens of train outputs and never in val/test, so its
   effect on that run's results is likely negligible. Runs should still be
   repeated after the fix.
+- **With `VOCAB_SIZE = 250`** (the RNN's new default, see NOTES.md) the impact is much
+  larger: the out-of-range word is `import`, which appears 173 times in train, 11 in
+  val, and 15 in test (first 384 tokens). On CPU this crashes; on MPS those tokens are
+  silently corrupted. The fix is needed before final RNN results are produced.
 
 Fix: use distinct strings, e.g. `"<pad>"` and `"<unk>"`.
 
