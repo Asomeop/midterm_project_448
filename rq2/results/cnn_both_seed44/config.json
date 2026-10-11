@@ -1,0 +1,16 @@
+{
+  "model": "cnn",
+  "setting": "both",
+  "text": "LLM_Input[:128 tokens] <sep> LLM_output",
+  "seed": 44,
+  "device": "mps",
+  "max_len": 384,
+  "max_vocab_size": 20000,
+  "vocab_size": 20000,
+  "epochs": 15,
+  "lr": 0.001,
+  "num_params": 2714803,
+  "n_train": 1470,
+  "n_val": 315,
+  "n_test": 315
+}
