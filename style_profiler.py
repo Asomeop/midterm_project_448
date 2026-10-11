@@ -1,8 +1,11 @@
 import re
 import string
 import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
 
-def extract_linguistic_features(df, text_col="LLM_output"):
+def extract_linguistic_features(df, text_col="LLM_output", return_raw=False):
     # use a predefined list of discourse markers, which are linguistic terms or phrases that help organize speech
     # we will focus on a small group of these discourse markers: hedges, boosters, transitions, personal pronouns, and direct addresses to the recipient
     DISCOURSE_MARKERS = {
@@ -65,13 +68,41 @@ def extract_linguistic_features(df, text_col="LLM_output"):
         })
 
     profile_df = pd.DataFrame(results)
+    if return_raw:
+        return profile_df
+
     summary = profile_df.groupby("model").mean().round(2)
-    print("Structural & Linguistic Profile of LLM Outputs\n")
-    print(summary)
     return summary
 
+def train_style_classifier(train_df, test_df):
+    print("Style Metric Classifier")
+
+    train_feat = extract_linguistic_features(train_df, return_raw = True)
+    test_feat = extract_linguistic_features(test_df, return_raw = True)
+
+    feature_cols = [c for c in train_feat.columns if c != "model"]
+    X_train, y_train = train_feat[feature_cols], train_feat["model"]
+    X_test, y_test = test_feat[feature_cols], test_feat["model"]
+
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    clf = LogisticRegression(max_iter = 1000)
+    clf.fit(X_train_scaled, y_train)
+
+    acc = clf.score(X_test_scaled, y_test)
+    print(f"\nStylistic Features Test Accuracy: {acc * 100:.2f}%\n")
+    print(classification_report(y_test, clf.predict(X_test_scaled), digits = 4))
+    return clf
+
 if __name__ == "__main__":
+    train_df = pd.read_csv("train.csv")
     test_df = pd.read_csv("test.csv")
+
     summary = extract_linguistic_features(test_df)
+    print("Structural & Linguistic Profile of LLM Outputs\n")
+    print(summary)
     summary.to_csv("lingustic_profiling_summary.csv")
-    print("\nSaved profiling metrics to 'lingustic_profiling_summary.csv'")
+    print("\nSaved profiling metrics to 'lingustic_profiling_summary.csv'\n")
+    train_style_classifier(train_df, test_df)
