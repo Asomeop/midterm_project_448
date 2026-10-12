@@ -1,5 +1,10 @@
 # Who Wrote It? Identifying LLMs from Their Responses
 
+**Team Lead:** Jacob Meert  
+Kasra Ghadimi  
+Jason McKinlay  
+Bryan Miller  
+
 CMPSC 448 midterm project. Given a piece of text, we try to tell which LLM wrote it:
 Claude, Gemini, or ChatGPT. We train a CNN and an RNN (LSTM) on responses from the
 LMArena human preference dataset and use them to answer four questions:
