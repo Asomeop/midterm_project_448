@@ -6,8 +6,8 @@ lessons-learned sections. Newest at the bottom.
 ## 2026-10-09: Overfitting in first LSTM run (hidden 128)
 
 **Run:** unidirectional LSTM, embed 128, hidden 128, dropout 0.5, Adam lr 1e-3,
-15 epochs, MPS, seed 42. Ran with the `dataset.py` pad/unk bug still present
-(bugs.md 1.1); effect likely negligible. Its results folder was later overwritten
+15 epochs, MPS, seed 42. Ran with the `dataset.py` pad/unk bug still present;
+effect likely negligible. Its results folder was later overwritten
 by the hidden-64 run (see correction below); the numbers here were recorded from
 its `history.json` / `metrics.json` before that.
 

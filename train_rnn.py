@@ -28,7 +28,7 @@ from model_rnn import LSTMClassifier
 
 # Shared settings match train_cnn.py so CNN vs RNN differences come from the model, not the setup
 BATCH_SIZE = 32
-MAX_LEN = 384        # tokens kept per text; longer texts are truncated (bugs.md 2.1)
+MAX_LEN = 384        # tokens kept per text; longer texts are truncated
 VOCAB_SIZE = 250     # DEVIATION from CNN (20000): chosen by val-loss sweep to curb overfitting (NOTES.md)
 EMBED_DIM = 128
 HIDDEN_DIM = 64      # size of the LSTM memory vector; was 128, reduced for overfitting (NOTES.md)
@@ -60,7 +60,7 @@ def pick_device(name):
 
 
 def train_epoch(model, loader, criterion, optimizer, device):
-    model.train()  # enables dropout
+    model.train()
     total_loss, correct, total = 0.0, 0, 0
 
     for x, y in loader:
@@ -70,7 +70,6 @@ def train_epoch(model, loader, criterion, optimizer, device):
         out = model(x)
         loss = criterion(out, y)
         loss.backward()
-        # Must sit between backward() (computes gradients) and step() (applies them)
         nn.utils.clip_grad_norm_(model.parameters(), CLIP_NORM)
         optimizer.step()
 
@@ -82,9 +81,9 @@ def train_epoch(model, loader, criterion, optimizer, device):
     return total_loss / total, (correct / total) * 100.0
 
 
-@torch.no_grad()  # no gradients needed for evaluation: faster, less memory
+@torch.no_grad()
 def evaluate(model, loader, criterion, device):
-    model.eval()  # disables dropout
+    model.eval()
     total_loss, correct, total = 0.0, 0, 0
     all_preds, all_labels = [], []
 
@@ -113,7 +112,6 @@ def save_json(obj, path):
 def main():
     parser = argparse.ArgumentParser()
     # LLM_output = RQ1 and RQ2 output-only; LLM_Input = RQ2 input-only.
-    # RQ2 input+output is not possible yet: dataset.py reads a single column.
     parser.add_argument("--text_column", default="LLM_output",
                         choices=["LLM_output", "LLM_Input"])
     parser.add_argument("--seed", type=int, default=42)
@@ -142,10 +140,6 @@ def main():
         max_vocab_size=args.vocab_size,
     )
 
-    # NOTE: this assumes the pad/unk token bug in dataset.py is fixed (bugs.md 1.1).
-    # While pad_token and unk_token are both "", len(vocab) is one too small, so the
-    # largest token id exceeds the embedding table and training crashes with an
-    # index-out-of-range error. That bug must be fixed in dataset.py before running.
     model = LSTMClassifier(
         vocab_size=len(vocab),
         num_classes=len(LABEL_MAP),
@@ -156,7 +150,6 @@ def main():
         pad_idx=vocab.pad_idx,
     ).to(device)
 
-    # Cross-entropy applies softmax internally, so the model outputs raw logits
     criterion = nn.CrossEntropyLoss()
     # AdamW with weight_decay=0 is identical to the CNN's Adam; >0 shrinks weights each step
     optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=args.weight_decay)
@@ -187,7 +180,7 @@ def main():
     }, os.path.join(out_dir, "config.json"))
 
     best_val_loss = float("inf")
-    history = []  # per-epoch curves, used later for training-curve figures
+    history = []
 
     for epoch in range(1, EPOCHS + 1):
         train_loss, train_acc = train_epoch(model, train_loader, criterion, optimizer, device)
